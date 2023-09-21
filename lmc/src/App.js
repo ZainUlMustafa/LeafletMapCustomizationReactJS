@@ -3,11 +3,7 @@ import bezierSpline from "@turf/bezier-spline";
 import * as turf from '@turf/turf';
 import DATA from './assets/data/coordinates.json'
 import MapWidget from "./components/MapWidget";
-
-// Extract data from the imported JSON file
-const dataset = DATA.datasets.dataset3
-const originalCoordinates = dataset.coordinates
-const controlledCoordinate = dataset.controller
+import { useState } from "react";
 
 // Function to convert GeoJSON to a list of points
 function geoJsonToListOfPoints(geoJson = {}) {
@@ -68,6 +64,11 @@ function findCoordinateWithMinDifference(coordinates, startIndex, ratioCalculato
 }
 
 function App() {
+  const [dataset, setDataset] = useState(DATA.datasets.dataset3)
+
+  const originalCoordinates = dataset.coordinates
+  const controlledCoordinate = dataset.controller
+
   // Calculate a curved path from original coordinates
   const curved = bezierSpline(lineString([...originalCoordinates]));
   const listCurvedCoordinates = geoJsonToListOfPoints(curved)
@@ -109,9 +110,21 @@ function App() {
   console.log("Second adj:", secondAdjustedCoordinate)
   const fullyAdjustedCoordinates = [adjustedCoordinates.at(0), firstAdjustedCoordinate.coordinate, controlledCoordinate, secondAdjustedCoordinate.coordinate, adjustedCoordinates.at(1)]
 
+  const handleChange = (event) => {
+    setDataset(DATA.datasets[event.target.value]);
+  };
+
   return (
-    <div className="" style={{ height: '100vh', width: '100vw', backgroundColor: 'red' }}>
+    <div className="" style={{ height: '100vh', width: '100vw', backgroundColor: '' }}>
       {/* {JSON.stringify(curved)} */}
+      <div>
+        <select value={dataset.id} onChange={handleChange}>
+          {Object.entries(DATA.datasets).map(([key, value], i) => {
+            return <option value={value.id}>{value.id}</option>
+          })}
+        </select>
+
+      </div>
       <MapWidget
         controlledCoordinate={controlledCoordinate}
         originalCoordinates={{

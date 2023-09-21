@@ -5,6 +5,7 @@
     },
     "datasets": {
         "dataset1": {
+            "id": "dataset1",
             "controller": [
                 -66.641488,
                 45.949408
@@ -33,6 +34,7 @@
             ]
         },
         "dataset2": {
+            "id": "dataset2",
             "controller": [
                 -66.644561,45.943482
             ],
@@ -45,6 +47,7 @@
             ]
         },
         "dataset3": {
+            "id": "dataset3",
             "controller": [
                 -66.647837,45.942987
             ],
