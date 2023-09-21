@@ -80,7 +80,7 @@ function App() {
         <span style={{ paddingLeft: '15px' }}>Try a dataset:</span>
         <select style={{ fontSize: '14px', padding: '10px', margin: '10px' }} value={dataset.id} onChange={handleChange}>
           {Object.entries(DATA.datasets).map(([key, value], i) => {
-            return <option value={value.id}>{value.id}</option>
+            return <option value={value.id}>{value.name}</option>
           })}
         </select>
       </label>
