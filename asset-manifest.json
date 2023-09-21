@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/LeafletMapCustomizationReactJS/static/css/main.9d116506.css",
+    "main.js": "/LeafletMapCustomizationReactJS/static/js/main.f935af38.js",
+    "static/js/787.e4974461.chunk.js": "/LeafletMapCustomizationReactJS/static/js/787.e4974461.chunk.js",
+    "index.html": "/LeafletMapCustomizationReactJS/index.html",
+    "main.9d116506.css.map": "/LeafletMapCustomizationReactJS/static/css/main.9d116506.css.map",
+    "main.f935af38.js.map": "/LeafletMapCustomizationReactJS/static/js/main.f935af38.js.map",
+    "787.e4974461.chunk.js.map": "/LeafletMapCustomizationReactJS/static/js/787.e4974461.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.9d116506.css",
+    "static/js/main.f935af38.js"
+  ]
+}
