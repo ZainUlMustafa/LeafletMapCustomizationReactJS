@@ -1,54 +1,63 @@
 import lineString from "turf-linestring";
 import bezierSpline from "@turf/bezier-spline";
+import { featureCollection, point } from '@turf/helpers';
+import { coordEach } from '@turf/meta';
+import * as turf from '@turf/turf';
+import DATA from './assets/data/coordinates.json'
 
-function geojsonToCoordinateList(geojson) {
-  const coordinates = [];
+const dataset = DATA.dataset2
+const originalCoordinates = dataset.coordinates
+const controlledCoordinate = dataset.controller
 
-  function extractCoordinates(geometry) {
-    if (geometry.type === 'Point') {
-      coordinates.push(geometry.coordinates);
-    } else if (geometry.type === 'LineString' || geometry.type === 'Polygon') {
-      geometry.coordinates.forEach(coord => coordinates.push(coord));
-    } else if (geometry.type === 'MultiPoint' || geometry.type === 'MultiLineString' || geometry.type === 'MultiPolygon') {
-      geometry.coordinates.forEach(subCoords => {
-        if (Array.isArray(subCoords[0])) {
-          subCoords.forEach(coord => coordinates.push(coord));
-        } else {
-          coordinates.push(subCoords);
-        }
-      });
+function geoJsonToListOfPoints(geoJson={}) {
+  const pointList = [...(geoJson?.geometry?.coordinates??[])]
+  return pointList;
+}
+
+function isCoordinateInList(coordinate, coordinateList) {
+  return coordinateList.some((item) => {
+    return item[0] === coordinate[0] && item[1] === coordinate[1];
+  });
+}
+
+function lookupCoordinatesInList(originalCoordinates=[], bigCoordinateList=[]) {
+  for (const coordinate of originalCoordinates) {
+    if (isCoordinateInList(coordinate, bigCoordinateList)) {
+      console.log(`Coordinate ${coordinate} is present in the big list.`);
+    } else {
+      console.log(`Coordinate ${coordinate} is not present in the big list.`);
     }
   }
+}
 
-  if (geojson.type === 'FeatureCollection') {
-    geojson.features.forEach(feature => extractCoordinates(feature.geometry));
-  } else {
-    extractCoordinates(geojson);
-  }
+function distanceCalculator(from, to) {
+  var distance = turf.distance(from, to, {units: 'meters'});
+  return distance
+}
 
-  return coordinates;
+function distanceRatioCalculator(boundaryStart, center, boundaryEnd) {
+  return distanceCalculator(boundaryStart, center) / distanceCalculator(center, boundaryEnd)
 }
 
 function App() {
-  var line = lineString([
-    //   [-76.091308, 18.427501],
-    // [-76.695556, 18.729501],
-    // [-76.552734, 19.40443],
-    // [-74.61914, 19.134789],
-    // [-73.652343, 20.07657],
-    // [-73.157958, 20.21066]
-    [67.067038, 24.882108],
-    [67.066971, 24.882209],
-    [67.067015, 24.882412],
-    [67.067227, 24.882538],
-    [67.067449, 24.882496],
-    [67.067573, 24.882317],
-    [67.067533, 24.882119],
-    [67.067274, 24.881999]
-  ]);
+  const curved = bezierSpline(lineString([...originalCoordinates]));
+  const listCurvedCoordinates = geoJsonToListOfPoints(curved)
+  const ratio012 = distanceRatioCalculator(originalCoordinates.at(0), originalCoordinates.at(1), originalCoordinates.at(2));
+  const ratio234 = distanceRatioCalculator(originalCoordinates.at(2), originalCoordinates.at(3), originalCoordinates.at(4));
+  console.log(`Original ratios: ${ratio012}, ${ratio234}`)
 
-  var curved = bezierSpline(line);
-  const listCoor = geojsonToCoordinateList(curved)
+  // adjusting the curved path
+  const adjustedCoordinates = [
+    originalCoordinates.at(0), controlledCoordinate, originalCoordinates.at(-1)
+  ]
+  const adjustedCurved = bezierSpline(lineString([...adjustedCoordinates]), {resolution: 10000});
+  const listAdjustedCurvedCoordinates = geoJsonToListOfPoints(adjustedCurved)
+  console.log(listAdjustedCurvedCoordinates.length)
+  listAdjustedCurvedCoordinates.forEach((eachCoordinate) => {
+    const firstRatio = distanceRatioCalculator(adjustedCoordinates.at(0), eachCoordinate, adjustedCoordinates.at(1))
+    const secondRatio = distanceRatioCalculator(adjustedCoordinates.at(1), eachCoordinate, adjustedCoordinates.at(2))
+    console.log(`${eachCoordinate} -> ${firstRatio}, ${secondRatio}`)
+  })
 
   return (
     <div className="">
