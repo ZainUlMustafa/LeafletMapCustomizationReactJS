@@ -50,39 +50,33 @@ function distanceRatioCalculator(boundaryStart, center, boundaryEnd) {
 function App() {
   const curved = bezierSpline(lineString([...originalCoordinates]));
   const listCurvedCoordinates = geoJsonToListOfPoints(curved)
-  const firstRatio = distanceRatioCalculator(originalCoordinates.at(0), originalCoordinates.at(1), originalCoordinates.at(2));
-  const secondRatio = distanceRatioCalculator(originalCoordinates.at(2), originalCoordinates.at(3), originalCoordinates.at(4));
-  console.log(`Original ratios: ${firstRatio}, ${secondRatio}`)
+  const originalRatios = {
+    first: distanceRatioCalculator(originalCoordinates.at(0), originalCoordinates.at(1), originalCoordinates.at(2)),
+    second: distanceRatioCalculator(originalCoordinates.at(2), originalCoordinates.at(3), originalCoordinates.at(4))
+  }
+  console.log(`Original ratios:`, originalRatios)
 
   // adjusting the curved path
-  const adjustedCoordinates = [
-    originalCoordinates.at(0), controlledCoordinate, originalCoordinates.at(-1)
-  ]
+  const adjustedCoordinates = [originalCoordinates.at(0), controlledCoordinate, originalCoordinates.at(-1)]
   const adjustedCurved = bezierSpline(lineString([...adjustedCoordinates]), {resolution: DATA.config.precision});
   const listAdjustedCurvedCoordinates = geoJsonToListOfPoints(adjustedCurved)
 
   const controlledCoordinateIndexInInterpolatedList = findIndexOfCoordinate(controlledCoordinate, listAdjustedCurvedCoordinates)
-  console.log(listAdjustedCurvedCoordinates.length, controlledCoordinateIndexInInterpolatedList)
+  // console.log(listAdjustedCurvedCoordinates.length, controlledCoordinateIndexInInterpolatedList)
 
   // divide search
   const firstAdjustedCoordinate = [...listAdjustedCurvedCoordinates].splice(0, controlledCoordinateIndexInInterpolatedList).map((eachCoordinate) => {
     const ratio = distanceRatioCalculator(adjustedCoordinates.at(0), eachCoordinate, adjustedCoordinates.at(1))
-    return {ratio: ratio, coordinate: eachCoordinate, diff: Math.abs(ratio - firstRatio)}
+    return {ratio: ratio, coordinate: eachCoordinate, diff: Math.abs(ratio - originalRatios.first)}
   }).sort((a, b) => a.diff - b.diff)[0]
 
   const secondAdjustedCoordinate = [...listAdjustedCurvedCoordinates].splice(controlledCoordinateIndexInInterpolatedList).map((eachCoordinate) => {
     const ratio = distanceRatioCalculator(adjustedCoordinates.at(1), eachCoordinate, adjustedCoordinates.at(2))
-    return {ratio: ratio, coordinate: eachCoordinate, diff: Math.abs(ratio - secondRatio)}
+    return {ratio: ratio, coordinate: eachCoordinate, diff: Math.abs(ratio - originalRatios.second)}
   }).sort((a, b) => a.diff - b.diff)[0]
 
   console.log(firstAdjustedCoordinate)
   console.log(secondAdjustedCoordinate)
-
-  // listAdjustedCurvedCoordinates.forEach((eachCoordinate) => {
-  //   const firstRatio = distanceRatioCalculator(adjustedCoordinates.at(0), eachCoordinate, adjustedCoordinates.at(1))
-  //   const secondRatio = distanceRatioCalculator(adjustedCoordinates.at(1), eachCoordinate, adjustedCoordinates.at(2))
-  //   console.log(`${eachCoordinate} -> ${firstRatio}, ${secondRatio}`)
-  // })
 
   return (
     <div className="">
