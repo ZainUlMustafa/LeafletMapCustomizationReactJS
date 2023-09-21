@@ -60,6 +60,7 @@ const MapWidget = ({ datasetId, originalCoordinates = { list: [], points: [] }, 
                         center={coordinate}
                         pathOptions={{ fillColor: 'blue', color: 'blue', fillOpacity: 1, stroke: true, fill: true }}
                         radius={2}>
+                        <Tooltip>Original coordinate {i + 1}</Tooltip>
                     </Circle>
                 })}
 
@@ -69,6 +70,7 @@ const MapWidget = ({ datasetId, originalCoordinates = { list: [], points: [] }, 
                         center={coordinate}
                         pathOptions={{ fillColor: 'green', color: 'green', fillOpacity: 1, stroke: true, fill: true }}
                         radius={2}>
+                        <Tooltip>Adjusted coordinate {i + 1}</Tooltip>
                     </Circle>
                 })}
 
@@ -76,7 +78,7 @@ const MapWidget = ({ datasetId, originalCoordinates = { list: [], points: [] }, 
                     center={center}
                     pathOptions={{ fillColor: 'red', color: 'black', fillOpacity: 1, stroke: true, fill: true }}
                     radius={2}>
-                        <Tooltip>Controlled coordinate</Tooltip>
+                    <Tooltip>Controlled coordinate</Tooltip>
                 </Circle>
             </MapContainer>
         </>

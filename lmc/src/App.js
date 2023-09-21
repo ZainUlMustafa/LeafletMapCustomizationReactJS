@@ -75,16 +75,18 @@ function App() {
   const selector = <>
     <div style={{ paddingInline: '15px' }}>
       <label>
-        <span style={{paddingRight: '15px', fontWeight: 'bold'}}>Bezier Coordinate Estimator</span>
-        <span style={{color: 'rgba(0,0,0,0.2)'}}>|</span>
-        <span style={{paddingLeft: '15px'}}>Try a dataset:</span>
+        <span style={{ paddingRight: '15px', fontWeight: 'bold' }}>Bezier Coordinate Estimator</span>
+        <span style={{ color: 'rgba(0,0,0,0.2)' }}>|</span>
+        <span style={{ paddingLeft: '15px' }}>Try a dataset:</span>
         <select style={{ fontSize: '14px', padding: '10px', margin: '10px' }} value={dataset.id} onChange={handleChange}>
           {Object.entries(DATA.datasets).map(([key, value], i) => {
             return <option value={value.id}>{value.id}</option>
           })}
         </select>
       </label>
-
+      <div style={{ float: 'right' }}>
+        <p><span style={{color: 'blue', fontWeight: 'bold'}}>Blue:</span> Original path, <span style={{color: 'red', fontWeight: 'bold'}}>Red:</span> Controller coordinate, <span style={{color: 'green', fontWeight: 'bold'}}>Green:</span> Adjusted path</p>
+      </div>
     </div>
   </>
 
