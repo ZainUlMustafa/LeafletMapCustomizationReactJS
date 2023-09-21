@@ -65,9 +65,40 @@ function findCoordinateWithMinDifference(coordinates, startIndex, ratioCalculato
 
 function App() {
   const [dataset, setDataset] = useState(DATA.datasets.dataset3)
+  const handleChange = (event) => {
+    setDataset(DATA.datasets[event.target.value]);
+  };
 
   const originalCoordinates = dataset.coordinates
   const controlledCoordinate = dataset.controller
+
+  const selector = <>
+    <div style={{ paddingInline: '15px' }}>
+      <label>
+        <span style={{paddingRight: '15px', fontWeight: 'bold'}}>Bezier Coordinate Estimator</span>
+        <span style={{color: 'rgba(0,0,0,0.2)'}}>|</span>
+        <span style={{paddingLeft: '15px'}}>Try a dataset:</span>
+        <select style={{ fontSize: '14px', padding: '10px', margin: '10px' }} value={dataset.id} onChange={handleChange}>
+          {Object.entries(DATA.datasets).map(([key, value], i) => {
+            return <option value={value.id}>{value.id}</option>
+          })}
+        </select>
+      </label>
+
+    </div>
+  </>
+
+  if (originalCoordinates.length < 5) {
+    return (
+      <>
+        {selector}
+        <div style={{ padding: '15px' }}>
+          <p>Dataset faulty</p>
+          <p style={{ color: 'red' }}>Found {originalCoordinates.length} coordinates when expected is 5</p>
+        </div>
+      </>
+    )
+  }
 
   // Calculate a curved path from original coordinates
   const curved = bezierSpline(lineString([...originalCoordinates]));
@@ -110,24 +141,10 @@ function App() {
   console.log("Second adj:", secondAdjustedCoordinate)
   const fullyAdjustedCoordinates = [adjustedCoordinates.at(0), firstAdjustedCoordinate.coordinate, controlledCoordinate, secondAdjustedCoordinate.coordinate, adjustedCoordinates.at(1)]
 
-  const handleChange = (event) => {
-    setDataset(DATA.datasets[event.target.value]);
-  };
-
   return (
     <div className="" style={{ height: '100vh', width: '100vw', backgroundColor: '' }}>
       {/* {JSON.stringify(curved)} */}
-      <div style={{ paddingInline: '15px' }}>
-        <label>
-          Select a dataset:
-          <select style={{ fontSize: '14px', padding: '10px', margin: '10px' }} value={dataset.id} onChange={handleChange}>
-            {Object.entries(DATA.datasets).map(([key, value], i) => {
-              return <option value={value.id}>{value.id}</option>
-            })}
-          </select>
-        </label>
-
-      </div>
+      {selector}
       <MapWidget
         key={dataset.id}
         controlledCoordinate={controlledCoordinate}
