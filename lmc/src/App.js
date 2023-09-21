@@ -5,28 +5,28 @@ import { coordEach } from '@turf/meta';
 import * as turf from '@turf/turf';
 import DATA from './assets/data/coordinates.json'
 
-const dataset = DATA.datasets.dataset2
+const dataset = DATA.datasets.dataset1
 const originalCoordinates = dataset.coordinates
 const controlledCoordinate = dataset.controller
 
-function geoJsonToListOfPoints(geoJson={}) {
-  const pointList = [...(geoJson?.geometry?.coordinates??[])]
+function geoJsonToListOfPoints(geoJson = {}) {
+  const pointList = [...(geoJson?.geometry?.coordinates ?? [])]
   return pointList;
 }
 
-function isCoordinateInList(coordinate, coordinateList=[]) {
+function isCoordinateInList(coordinate, coordinateList = []) {
   return coordinateList.some((item) => {
     return item[0] === coordinate[0] && item[1] === coordinate[1];
   });
 }
 
-function findIndexOfCoordinate(coordinate, coordinateList=[]) {
+function findIndexOfCoordinate(coordinate, coordinateList = []) {
   return coordinateList.findIndex((item) => {
     return item[0] === coordinate[0] && item[1] === coordinate[1];
   });
 }
 
-function lookupCoordinatesInList(originalCoordinates=[], bigCoordinateList=[]) {
+function lookupCoordinatesInList(originalCoordinates = [], bigCoordinateList = []) {
   for (const coordinate of originalCoordinates) {
     if (isCoordinateInList(coordinate, bigCoordinateList)) {
       console.log(`Coordinate ${coordinate} is present in the big list.`);
@@ -37,7 +37,7 @@ function lookupCoordinatesInList(originalCoordinates=[], bigCoordinateList=[]) {
 }
 
 function distanceCalculator(from, to) {
-  var distance = turf.distance(from, to, {units: DATA.config.units});
+  var distance = turf.distance(from, to, { units: DATA.config.units });
   // console.log(`Distance between ${from} and ${to} is ${distance}`)
   return distance
 }
@@ -45,6 +45,21 @@ function distanceCalculator(from, to) {
 function distanceRatioCalculator(boundaryStart, center, boundaryEnd) {
   // console.log(`Distance Ratio: ${distanceCalculator(boundaryStart, center)} / ${distanceCalculator(center, boundaryEnd)}`)
   return distanceCalculator(boundaryStart, center) / distanceCalculator(center, boundaryEnd)
+}
+
+function findCoordinateWithMinDifference(coordinates, startIndex, ratioCalculator, targetRatios) {
+  return coordinates
+    .slice(startIndex)
+    .reduce((minDiffCoordinate, eachCoordinate) => {
+      const ratio = ratioCalculator(eachCoordinate);
+      const diff = Math.abs(ratio - targetRatios);
+
+      if (diff < minDiffCoordinate.diff) {
+        return { ratio, coordinate: eachCoordinate, diff };
+      }
+
+      return minDiffCoordinate;
+    }, { diff: Infinity });
 }
 
 function App() {
@@ -58,22 +73,28 @@ function App() {
 
   // adjusting the curved path
   const adjustedCoordinates = [originalCoordinates.at(0), controlledCoordinate, originalCoordinates.at(-1)]
-  const adjustedCurved = bezierSpline(lineString([...adjustedCoordinates]), {resolution: DATA.config.precision});
+  const adjustedCurved = bezierSpline(lineString([...adjustedCoordinates]), { resolution: DATA.config.precision });
   const listAdjustedCurvedCoordinates = geoJsonToListOfPoints(adjustedCurved)
 
   const controlledCoordinateIndexInInterpolatedList = findIndexOfCoordinate(controlledCoordinate, listAdjustedCurvedCoordinates)
   // console.log(listAdjustedCurvedCoordinates.length, controlledCoordinateIndexInInterpolatedList)
 
   // divide search
-  const firstAdjustedCoordinate = [...listAdjustedCurvedCoordinates].splice(0, controlledCoordinateIndexInInterpolatedList).map((eachCoordinate) => {
-    const ratio = distanceRatioCalculator(adjustedCoordinates.at(0), eachCoordinate, adjustedCoordinates.at(1))
-    return {ratio: ratio, coordinate: eachCoordinate, diff: Math.abs(ratio - originalRatios.first)}
-  }).sort((a, b) => a.diff - b.diff)[0]
+  const firstAdjustedCoordinate = findCoordinateWithMinDifference(
+    listAdjustedCurvedCoordinates,
+    0,
+    (eachCoordinate) =>
+      distanceRatioCalculator(adjustedCoordinates.at(0), eachCoordinate, adjustedCoordinates.at(1)),
+    originalRatios.first
+  );
 
-  const secondAdjustedCoordinate = [...listAdjustedCurvedCoordinates].splice(controlledCoordinateIndexInInterpolatedList).map((eachCoordinate) => {
-    const ratio = distanceRatioCalculator(adjustedCoordinates.at(1), eachCoordinate, adjustedCoordinates.at(2))
-    return {ratio: ratio, coordinate: eachCoordinate, diff: Math.abs(ratio - originalRatios.second)}
-  }).sort((a, b) => a.diff - b.diff)[0]
+  const secondAdjustedCoordinate = findCoordinateWithMinDifference(
+    listAdjustedCurvedCoordinates,
+    controlledCoordinateIndexInInterpolatedList,
+    (eachCoordinate) =>
+      distanceRatioCalculator(adjustedCoordinates.at(1), eachCoordinate, adjustedCoordinates.at(2)),
+    originalRatios.second
+  );
 
   console.log(firstAdjustedCoordinate)
   console.log(secondAdjustedCoordinate)
