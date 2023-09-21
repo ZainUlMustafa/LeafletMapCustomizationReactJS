@@ -19,14 +19,14 @@ function swapCoordinates(coordinatesArray) {
     return coordinatesArray.map((coordinate) => [coordinate[1], coordinate[0]]);
 }
 
-const MapWidget = ({ originalCoordinates = { list: [], points: [] }, adjustedCoordinates = { list: [], points: [] }, controlledCoordinate = [] }) => {
+const MapWidget = ({ datasetId, originalCoordinates = { list: [], points: [] }, adjustedCoordinates = { list: [], points: [] }, controlledCoordinate = [] }) => {
     const center = swapCoordinates([controlledCoordinate])[0]
 
     // console.log(adjustedCoordinates.points)
 
     return (
         <>
-            <MapContainer style={{ width: '100%', height: '100%' }} attributionControl={false} center={center} zoom={18} scrollWheelZoom={true} maxZoom={25}>
+            <MapContainer key={datasetId} style={{ width: '100%', height: '100%' }} attributionControl={false} center={center} zoom={18} scrollWheelZoom={true} maxZoom={25}>
                 {/* {pinned ? <MinimapControl position="bottomleft" zoom={12} /> : <></>} */}
                 <TileLayer
                     attribution=''

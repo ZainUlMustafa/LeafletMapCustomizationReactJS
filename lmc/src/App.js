@@ -117,15 +117,19 @@ function App() {
   return (
     <div className="" style={{ height: '100vh', width: '100vw', backgroundColor: '' }}>
       {/* {JSON.stringify(curved)} */}
-      <div>
-        <select value={dataset.id} onChange={handleChange}>
-          {Object.entries(DATA.datasets).map(([key, value], i) => {
-            return <option value={value.id}>{value.id}</option>
-          })}
-        </select>
+      <div style={{ paddingInline: '15px' }}>
+        <label>
+          Select a dataset:
+          <select style={{ fontSize: '14px', padding: '10px', margin: '10px' }} value={dataset.id} onChange={handleChange}>
+            {Object.entries(DATA.datasets).map(([key, value], i) => {
+              return <option value={value.id}>{value.id}</option>
+            })}
+          </select>
+        </label>
 
       </div>
       <MapWidget
+        key={dataset.id}
         controlledCoordinate={controlledCoordinate}
         originalCoordinates={{
           list: listCurvedCoordinates,
