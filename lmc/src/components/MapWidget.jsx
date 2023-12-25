@@ -19,7 +19,7 @@ function swapCoordinates(coordinatesArray) {
     return coordinatesArray.map((coordinate) => [coordinate[1], coordinate[0]]);
 }
 
-const scale = 50
+const scale = 10
 
 const MapWidget = ({ datasetId, originalCoordinates = { list: [], points: [] }, adjustedCoordinates = { list: [], points: [] }, controlledCoordinate = [] }) => {
     const center = swapCoordinates([controlledCoordinate])[0]
