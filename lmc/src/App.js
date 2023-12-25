@@ -141,8 +141,9 @@ function App() {
   console.log("Original ratios:", originalRatios)
   console.log("First adj:", firstAdjustedCoordinate)
   console.log("Second adj:", secondAdjustedCoordinate)
-  const fullyAdjustedCoordinates = [adjustedCoordinates.at(0), firstAdjustedCoordinate.coordinate, controlledCoordinate, secondAdjustedCoordinate.coordinate, adjustedCoordinates.at(1)]
+  const fullyAdjustedCoordinates = [adjustedCoordinates.at(0), firstAdjustedCoordinate.coordinate, controlledCoordinate, secondAdjustedCoordinate.coordinate, adjustedCoordinates.at(2)]
 
+  console.log("fullyAdjustedCoordinates", adjustedCoordinates, fullyAdjustedCoordinates)
   return (
     <div className="" style={{ height: '100vh', width: '100vw', backgroundColor: '' }}>
       {/* {JSON.stringify(curved)} */}

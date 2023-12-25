@@ -19,6 +19,8 @@ function swapCoordinates(coordinatesArray) {
     return coordinatesArray.map((coordinate) => [coordinate[1], coordinate[0]]);
 }
 
+const scale = 50
+
 const MapWidget = ({ datasetId, originalCoordinates = { list: [], points: [] }, adjustedCoordinates = { list: [], points: [] }, controlledCoordinate = [] }) => {
     const center = swapCoordinates([controlledCoordinate])[0]
 
@@ -41,7 +43,7 @@ const MapWidget = ({ datasetId, originalCoordinates = { list: [], points: [] }, 
                         key={i}
                         center={coordinate}
                         pathOptions={{ fillColor: 'rgba(0,0,255,0.3)', color: 'rgba(0,0,255,0.3)', fillOpacity: 1, stroke: true, fill: true }}
-                        radius={0.05}>
+                        radius={0.05/scale}>
                     </Circle>
                 })}
 
@@ -50,26 +52,26 @@ const MapWidget = ({ datasetId, originalCoordinates = { list: [], points: [] }, 
                         key={i}
                         center={coordinate}
                         pathOptions={{ fillColor: 'rgba(34, 139, 34,0.3)', color: 'rgba(34, 139, 34,0.3)', fillOpacity: 1, stroke: true, fill: true }}
-                        radius={0.05}>
+                        radius={0.05/scale}>
                     </Circle>
                 })}
 
-                {[...swapCoordinates(originalCoordinates.points)].map((coordinate, i) => {
+                {/* {[...swapCoordinates(originalCoordinates.points)].map((coordinate, i) => {
                     return <Circle
                         key={i}
                         center={coordinate}
                         pathOptions={{ fillColor: 'blue', color: 'black', fillOpacity: 1, stroke: true, fill: true }}
-                        radius={2}>
+                        radius={2/scale}>
                         <Tooltip>Original coordinate {i + 1}</Tooltip>
                     </Circle>
-                })}
+                })} */}
 
                 {[...swapCoordinates(adjustedCoordinates.points)].map((coordinate, i) => {
                     return <Circle
                         key={i}
                         center={coordinate}
                         pathOptions={{ fillColor: 'green', color: 'black', fillOpacity: 1, stroke: true, fill: true }}
-                        radius={2}>
+                        radius={2/scale}>
                         <Tooltip>Adjusted coordinate {i + 1}</Tooltip>
                     </Circle>
                 })}
@@ -77,7 +79,7 @@ const MapWidget = ({ datasetId, originalCoordinates = { list: [], points: [] }, 
                 <Circle
                     center={center}
                     pathOptions={{ fillColor: 'red', color: 'black', fillOpacity: 1, stroke: true, fill: true }}
-                    radius={2}>
+                    radius={2/scale}>
                     <Tooltip>Controller coordinate</Tooltip>
                 </Circle>
             </MapContainer>
